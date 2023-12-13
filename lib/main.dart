@@ -3,9 +3,9 @@
 import 'dart:convert';
 
 import 'package:backss/noticontroller.dart';
+import 'package:backss/notifications_history.dart';
 import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import "package:get/get.dart";
 
 void callbackDispatcher() {
@@ -13,36 +13,43 @@ void callbackDispatcher() {
     // Perform API call or any background task here
     try {
       // Make API call using getx
-      var data= {
-        "cp__member_first_name":"jad",
-        "cp__member_last_name":"shaheen",
-        "cp__member_phone":"4444444",
-        "cp__member_name":"jad121",
-        "cp__member_password":"123456789",
-        "cp__member_email":"ruba.s.opentech@gmail.com"
-      };
-
 
 
       //when you this code is to test on ios devices NOTE : minimum time to wait in ios is 15 minitus
       // NotificationService()
       //     .showNotification(title: "terst for ios ", body: "message for ios ");
+      var data = {
+        "user_id": 1,
+      };
 
+      var response = await GetConnect().post(
+        'http://192.168.1.147/notifications/check_noti.php',
+        FormData(data),
+      );
 
-      var response = await GetConnect().post('http://192.168.1.170:2090/cp/ms/cp_api/member_api.php?action=register',FormData(data));
-      var result = json.decode(response.body);
-      NotificationService()
-          .showNotification(title: result["title"], body: result["message"]);
       if (response.statusCode == 200) {
-        NotificationService()
-            .showNotification(title: result["title"], body: result["message"]);
-        // Check if a new record is added in the database
-        // If true, trigger a local notification
+        var result = json.decode(response.body);
 
+        if (result.isNotEmpty) {
+          print("Received");
 
+          for (var notification in result) {
+            print(notification['title']);
+            var title = notification["title"];
+            var body = notification["message"];
+            NotificationService().showNotification(title: title, body: body);
+            await Future.delayed(Duration(seconds: 2));
+          }
+        } else {
+          print("No new notifications");
+        }
 
-
+        GetConnect().get("http://192.168.1.147/notifications/notification_history.php");
+      } else {
+        print("Failed to fetch notifications");
       }
+
+
     } catch (e) {
       print("Error: $e");
     }
@@ -59,7 +66,7 @@ void main() {
     "periodicTask",
     "simplePeriodicTask",
     //it must be 15 min since in ios it the minimum required time for a task to excec in the background or in terminated state of the application
-    frequency: Duration(minutes: 9),
+    frequency: Duration(minutes: 15),
   );
 
   runApp(MyApp());
@@ -68,12 +75,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text('Background API Call'),
           backgroundColor: Colors.amber,
+          actions: [
+            IconButton(onPressed: (){
+              Get.to(NotificationHistory());
+            }, icon: Icon(Icons.history)),
+          ],
         ),
         body: Center(
           child: Column(
@@ -84,32 +96,39 @@ class MyApp extends StatelessWidget {
               //this button is to check if the function work in the foreground
               ElevatedButton(onPressed: () async{
                 try {
-                  //api to add a record to tamallak database
-                  var data= {
-                    "cp__member_first_name":"jad",
-                    "cp__member_last_name":"shaheen",
-                    "cp__member_phone":"123556",
-                    "cp__member_name":"jad121",
-                    "cp__member_password":"123456789",
-                    "cp__member_email":"ruba.s.opentech@gmail.com"
+                  var data = {
+                    "user_id": 1,
                   };
 
+                  var response = await GetConnect().post(
+                    'http://192.168.1.147/notifications/check_noti.php',
+                    FormData(data),
+                  );
 
-                  var response = await GetConnect().post('http://192.168.1.170:2090/cp/ms/cp_api/member_api.php?action=register',FormData(data));
-                  var result = json.decode(response.body);
-                  print("this is the body $result ");
-                  NotificationService()
-                      .showNotification(title: result["title"], body: result["message"]);
                   if (response.statusCode == 200) {
-                    NotificationService()
-                        .showNotification(title: result["title"], body: result["message"]);
-                    // Check if a new record is added in the database
-                    // If true, trigger a local notification
+                    var result = json.decode(response.body);
 
+                    if (result.isNotEmpty) {
+                      print("Received");
 
-
-
+                      for (var notification in result) {
+                        print(notification['title']);
+                        var title = notification["title"];
+                        var body = notification["message"];
+                        NotificationService().showNotification(title: title, body: body);
+                        await Future.delayed(Duration(seconds: 2));
+                      }
+                    } else {
+                      print("No new notifications");
+                    }
+                    
+                    GetConnect().get("http://192.168.1.147/notifications/notification_history.php");
+                  } else {
+                    print("Failed to fetch notifications");
                   }
+
+
+
                 } catch (e) {
                   print("Error: $e");
                 }
