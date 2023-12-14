@@ -14,7 +14,7 @@ void callbackDispatcher() {
     try {
       // Make API call using getx
 
-//mmmm
+
       //when you this code is to test on ios devices NOTE : minimum time to wait in ios is 15 minitus
       // NotificationService()
       //     .showNotification(title: "terst for ios ", body: "message for ios ");
