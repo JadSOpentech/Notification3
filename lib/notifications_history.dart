@@ -23,7 +23,7 @@ class _NotificationHistoryState extends State<NotificationHistory> {
   Future<void> fetchNotifications() async {
     //this is for user 1 only
     final response = await GetConnect().get(
-          'http://192.168.1.147/notifications/get_notifications.php?user_id=1');
+          'http://amjadtech.com/jad/get_notifications.php?user_id=1');
 
     if (response.statusCode == 200) {
       setState(() {

@@ -23,7 +23,7 @@ void callbackDispatcher() {
       };
 
       var response = await GetConnect().post(
-        'http://192.168.1.147/notifications/check_noti.php',
+        'http://amjadtech.com/jad/check_noti.php',
         FormData(data),
       );
 
@@ -44,7 +44,7 @@ void callbackDispatcher() {
           print("No new notifications");
         }
 
-        GetConnect().get("http://192.168.1.147/notifications/notification_history.php");
+        GetConnect().get("http://amjadtech.com/jad/notification_history.php");
       } else {
         print("Failed to fetch notifications");
       }
@@ -101,7 +101,7 @@ class MyApp extends StatelessWidget {
                   };
 
                   var response = await GetConnect().post(
-                    'http://192.168.1.147/notifications/check_noti.php',
+                    'http://amjadtech.com/jad/check_noti.php',
                     FormData(data),
                   );
 
@@ -122,7 +122,7 @@ class MyApp extends StatelessWidget {
                       print("No new notifications");
                     }
                     
-                    GetConnect().get("http://192.168.1.147/notifications/notification_history.php");
+                    GetConnect().get("http://amjadtech.com/jad/notification_history.php");
                   } else {
                     print("Failed to fetch notifications");
                   }
